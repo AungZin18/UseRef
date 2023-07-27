@@ -1,28 +1,47 @@
-import {useState } from "react";
+import { useReducer, useState } from "react";
 
+const firstReducer = (state, action) => {
+  switch (action.type) {
+    case "minus":
+      return { ...state, count: state.count - 1 };
+      case "plus":
+        return {...state,count:state.count+1};
+        case "updateKey":
+          return {...state,key:action.payload}
+  }
+};
+const ACTION={
+    PLUS:"plus",
+    MINUS:"minus",
+    UPDATE_KEY:"updateKey"
+  }
 function App() {
-  const [key,setKey]=useState("")
-     
-const [count,setCount]=useState(0)
-  return (
-<>
+    const [key,setKey]=useState("")
 
-   <input type="text" onChange={(e)=>{
-    setKey(e.target.value)
-   }}/>
-<h1>Your key is {key}</h1>
-<button onClick={()=>{
-  setCount(prev=>(
-    prev-1
-  ))
-}}>-</button>
-<span>{count}</span>
-<button onClick={()=>{
-  setCount(prev=>(prev+1))
-}}>+</button>
-</>
-  )
- 
+  // const [count,setCount]=useState(0)
+
+  const [state, dispatch] = useReducer(firstReducer, { key: "", count: 0 });
+
+  return (
+    <>
+      <input
+        type="text"
+        onChange={(e) => dispatch({type:ACTION.UPDATE_KEY,payload:e.target.value})}
+      />
+      <h1>Your key is {state.key}</h1>
+      <button
+        onClick={()=>dispatch({type:ACTION.MINUS})}
+      >
+        -
+      </button>
+      <span>{state.count}</span>
+      <button
+        onClick={() => dispatch({type:ACTION.PLUS})}
+      >
+        +
+      </button>
+    </>
+  );
 }
 
 export default App;
