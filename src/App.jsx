@@ -1,46 +1,54 @@
-import { useReducer, useState } from "react";
+import { useState } from "react";
 
-const firstReducer = (state, action) => {
-  switch (action.type) {
-    case "minus":
-      return { ...state, count: state.count - 1 };
-      case "plus":
-        return {...state,count:state.count+1};
-        case "updateKey":
-          return {...state,key:action.payload}
-  }
-};
-const ACTION={
-    PLUS:"plus",
-    MINUS:"minus",
-    UPDATE_KEY:"updateKey"
-  }
 function App() {
-    const [key,setKey]=useState("")
-
-  // const [count,setCount]=useState(0)
-
-  const [state, dispatch] = useReducer(firstReducer, { key: "", count: 0 });
-
+  const [id, setId] = useState("");
+  const [error,setError]=useState(false)
+  const [todo,setTodo]=useState("")
+  const getData = async (e) => {
+    e.preventDefault();
+    if(id<1){
+setError(true)
+setId("")
+return;
+    }
+    const response = await fetch(
+      `https://jsonplaceholder.typicode.com/todos/${id}`
+    );
+    const data = await response.json();
+    setError(false)
+   setTodo(data)
+    setId("");
+  };
   return (
-    <>
-      <input
-        type="text"
-        onChange={(e) => dispatch({type:ACTION.UPDATE_KEY,payload:e.target.value})}
-      />
-      <h1>Your key is {state.key}</h1>
-      <button
-        onClick={()=>dispatch({type:ACTION.MINUS})}
-      >
-        -
-      </button>
-      <span>{state.count}</span>
-      <button
-        onClick={() => dispatch({type:ACTION.PLUS})}
-      >
-        +
-      </button>
-    </>
+    <section>
+      <form onSubmit={getData}>
+        <input
+          type="number"
+          value={id}
+          onChange={(e) => {
+            setId(e.target.value);
+          }}
+        />
+        <button type="submit">Get Data</button>
+      </form>
+      <div>
+        {
+          error && <h1>Please enter a valid number</h1>
+        }
+        {
+          todo && (
+            <div>
+            <h1>Id : {todo.id}</h1>
+            <h1>Userid : {todo.userId}</h1>
+            <h1>Title : {todo.title}</h1>
+          <h1>Completed : {
+            todo.completed?(<span>Done</span>):(<span>None</span>)
+            }</h1>
+            </div>
+          )
+        }
+      </div>
+    </section>
   );
 }
 
